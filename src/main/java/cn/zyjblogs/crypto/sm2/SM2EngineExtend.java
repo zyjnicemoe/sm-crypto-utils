@@ -14,6 +14,9 @@ import org.bouncycastle.util.BigIntegers;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+/**
+ * @author zhuyijun
+ */
 public class SM2EngineExtend {
     private final Digest digest;
 

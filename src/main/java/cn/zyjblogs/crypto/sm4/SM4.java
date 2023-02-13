@@ -15,18 +15,29 @@ import java.util.Locale;
 
 /**
  * 国密SM4对称加密算法
+ * @author zhuyijun
  */
 public class SM4 {
-    // 算法
+    /**
+     * 算法
+     */
     private static final String SM4_ALGORITHM = "SM4";
-    // 密钥长度128位
+    /**
+     * 密钥长度128位
+     */
     private static final int DEFAULT_KEY_SIZE = 128;
-    // 变换规则（CBC模式）
+    /**
+     * 变换规则（CBC模式）
+     */
     private static final String TRANSFORMATION_CBC = "SM4/CBC/PKCS5Padding";
-    // 变换规则（ECB模式）
+    /**
+     * 变换规则（ECB模式）
+     */
     private static final String TRANSFORMATION_ECB = "SM4/ECB/PKCS5Padding";
 
-    // 追加提BC提供器
+    /**
+     * 追加提BC提供器
+     */
     static {
         Security.addProvider(new BouncyCastleProvider());
     }

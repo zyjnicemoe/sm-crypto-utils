@@ -1,5 +1,8 @@
 package cn.zyjblogs.crypto.sm2;
 
+/**
+ * @author zhuyijun
+ */
 public class SM2KeyPair {
     /**
      * 公钥

@@ -10,6 +10,7 @@ import java.util.Locale;
 
 /**
  * 国密SM3摘要算法
+ * @author zhuyijun
  */
 public class SM3 {
 

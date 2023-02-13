@@ -29,11 +29,14 @@ import java.util.Locale;
 
 /**
  * 国密SM2非对称加密算法
+ * @author zhuyijun
  */
 public class SM2 {
 
     public static final String CRYPTO_NAME_SM2 = "sm2p256v1";
-    private static byte SM2_CIPHER_FIRST_BIT = 4;
+    public static final String BC04 = "04";
+    private static final byte SM2_CIPHER_FIRST_BIT = 4;
+    private static final int DEFAULT_KEY_SIZE = 128;
 
     public enum EncodeType {
         UTF8,
@@ -107,8 +110,8 @@ public class SM2 {
     public static String encrypt(String pubKey, String data, int cipherMode, EncodeType inputType, EncodeType outType) {
         try {
             // 非压缩模式公钥对接放是128位HEX秘钥，需要为BC库加上“04”标记
-            if (pubKey.length() == 128) {
-                pubKey = "04" + pubKey;
+            if (pubKey.length() == DEFAULT_KEY_SIZE) {
+                pubKey = BC04 + pubKey;
             }
             // 获取一条SM2曲线参数
             X9ECParameters sm2ECParameters = GMNamedCurves.getByName(CRYPTO_NAME_SM2);
@@ -183,8 +186,8 @@ public class SM2 {
             byte[] cipherDataByte;
             if (EncodeType.HEX.equals(inputType)) {
                 // 使用BC库加解密时密文以04开头，传入的密文前面没有04则补上
-                if (!cipherData.startsWith("04")) {
-                    cipherData = "04" + cipherData;
+                if (!cipherData.startsWith(BC04)) {
+                    cipherData = BC04 + cipherData;
                 }
                 cipherDataByte = Hex.decode(cipherData);
             } else if (EncodeType.BASE64.equals(inputType)) {
@@ -273,8 +276,8 @@ public class SM2 {
     public static boolean verify(String pubKey, String plainText, String signatureValue) {
 
         // 非压缩模式公钥对接放是128位HEX秘钥，需要为BC库加上“04”标记
-        if (pubKey.length() == 128) {
-            pubKey = "04" + pubKey;
+        if (pubKey.length() == DEFAULT_KEY_SIZE) {
+            pubKey = BC04 + pubKey;
         }
 
         try {

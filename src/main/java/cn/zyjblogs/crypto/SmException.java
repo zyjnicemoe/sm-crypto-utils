@@ -2,6 +2,9 @@ package cn.zyjblogs.crypto;
 
 /**
  * @author zhuyijun
+ * @version 1.0.0
+ * @description SM异常类
+ * @create 2022/12/13 15:37
  */
 public class SmException extends RuntimeException {
     public SmException() {
