@@ -6,7 +6,31 @@
 
     <groupId>cn.zyjblogs.crypto</groupId>
     <artifactId>sm</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
+
+    <!--结尾添加如下内容-->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://gogs.zyjblogs.cn/zhuyijun/sm</url>
+        <connection>https://gogs.zyjblogs.cn/zhuyijun/sm</connection>
+        <developerConnection>https://gogs.zyjblogs.cn/zhuyijun/sm</developerConnection>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>zhuyijun</name>
+            <email>1317453947@qq.com</email>
+            <url>https://gogs.zyjblogs.cn/zhuyijun/sm</url>
+        </developer>
+    </developers>
+
 
     <properties>
         <maven.compiler.source>18</maven.compiler.source>

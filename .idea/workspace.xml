@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f9a77de5-fcc9-47de-81d8-5566adc1dae1" name="变更" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/zyjblogs/crypto/SmException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/zyjblogs/crypto/sm2/SM2.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/zyjblogs/crypto/sm2/SM2EngineExtend.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/zyjblogs/crypto/sm2/SM2KeyPair.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/zyjblogs/crypto/sm3/SM3.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cn/zyjblogs/crypto/sm4/SM4.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +36,11 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "E:/project/sm/src/main/java/cn/zyjblogs/crypto",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
     "project.structure.last.edited": "项目",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.3739931",
@@ -86,7 +80,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676268014859</updated>
-      <workItem from="1676268015862" duration="147000" />
+      <workItem from="1676268015862" duration="576000" />
     </task>
     <servers />
   </component>
