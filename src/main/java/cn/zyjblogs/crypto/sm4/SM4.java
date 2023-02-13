@@ -35,8 +35,8 @@ public class SM4 {
      */
     private static final String TRANSFORMATION_ECB = "SM4/ECB/PKCS5Padding";
 
-    /**
-     * 追加提BC提供器
+    /*
+      追加提BC提供器
      */
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -197,7 +197,7 @@ public class SM4 {
 
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         String iv = SM4.generateKey();
         System.out.println(iv);
         System.out.println("加密:---------");
