@@ -7,7 +7,7 @@
 
     <groupId>cn.zyjblogs</groupId>
     <artifactId>sm-crypto-utils</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <description>国密SM2、SM3、SM4加解密</description>
     <name>${project.artifactId}</name>
     <packaging>jar</packaging>
