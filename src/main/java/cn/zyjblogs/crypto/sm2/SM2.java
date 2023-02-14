@@ -5,6 +5,7 @@ import org.bouncycastle.asn1.gm.GMNamedCurves;
 import org.bouncycastle.asn1.gm.GMObjectIdentifiers;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.crypto.params.*;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
@@ -16,7 +17,6 @@ import org.bouncycastle.jce.spec.ECPrivateKeySpec;
 import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
-
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -26,6 +26,7 @@ import java.security.Signature;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * 国密SM2非对称加密算法
@@ -39,6 +40,9 @@ public class SM2 {
     private static final int DEFAULT_KEY_SIZE = 128;
 
     public enum EncodeType {
+        /**
+         * 编码类型
+         */
         UTF8,
         HEX,
         BASE64
@@ -97,10 +101,11 @@ public class SM2 {
 
     /**
      * SM2加密算法
-     *
+     * 默认输入UTF-8  默认输出 HEX
      * @param pubKey 公钥
      * @param data   待加密的数据
-     * @return 密文，BC库产生的密文带由04标识符，与非BC库对接时需要去掉开头的04
+     * @return 密文
+     * BC库产生的密文带由"04"标识符，与非BC库对接时需要去掉开头的04
      */
     public static String encrypt(String pubKey, String data) {
 
@@ -110,20 +115,22 @@ public class SM2 {
 
     /**
      * SM2加密算法
-     *
+     * 加密暂不支持 UTF-8类型数据输出
      * @param pubKey 公钥
      * @param data   待加密的数据
      * @param inputType 输入数据类型
      * @param outType 输出数据类型
-     * @return 密文，BC库产生的密文带由04标识符，与非BC库对接时需要去掉开头的04
+     * @return 密文，BC库产生的密文带由"04"标识符，与非BC库对接时需要去掉开头的04
      */
     public static String encrypt(String pubKey, String data,EncodeType inputType, EncodeType outType) {
-
         // 按国密排序标准加密
         return encrypt(pubKey, data, SM2EngineExtend.CIPHER_MODE_NORM, inputType, outType);
     }
+
     /**
      *  加密
+     *  加密暂不支持 UTF-8 类型输出
+     *
      * @param pubKey 公钥
      * @param data  待加密的数据
      * @param mode 模式
@@ -132,7 +139,6 @@ public class SM2 {
      * @param inputType 输入数据类型
      * @param outType 输出数据类型
      * @author zhuyijun
-     * @date 2023/2/14 10:18
      * @return java.lang.String
     */
     public static String encrypt(String pubKey, String data,Mode mode,EncodeType inputType, EncodeType outType) {
@@ -144,9 +150,12 @@ public class SM2 {
      * @param pubKey     公钥
      * @param data       待加密的数据
      * @param cipherMode 密文排列方式0-C1C2C3；1-C1C3C2；
-     * @return 密文，BC库产生的密文带由04标识符，与非BC库对接时需要去掉开头的04
+     * @return 密文，BC库产生的密文带由"04"标识符，与非BC库对接时需要去掉开头的04
      */
     public static String encrypt(String pubKey, String data, int cipherMode, EncodeType inputType, EncodeType outType) {
+        if (Objects.equals(EncodeType.UTF8,outType)){
+            throw new SmException("加密暂不支持UTF-8编码格式数据输出!,请修改输出类型");
+        }
         try {
             // 非压缩模式公钥对接放是128位HEX秘钥，需要为BC库加上“04”标记
             if (pubKey.length() == DEFAULT_KEY_SIZE) {
@@ -172,19 +181,24 @@ public class SM2 {
             } else {
                 in = data.getBytes(StandardCharsets.UTF_8);
             }
-            byte[] arrayOfBytes = sm2Engine.processBlock(in, 0, in.length);
-            if (EncodeType.BASE64.equals(outType)) {
-                byte[] base64Bytes = Base64.getEncoder().encode(arrayOfBytes);
-                return new String(base64Bytes, StandardCharsets.UTF_8);
-            } else if (EncodeType.HEX.equals(outType)) {
-                return Hex.toHexString(arrayOfBytes).toUpperCase(Locale.ROOT);
-            } else {
-                return new String(arrayOfBytes, StandardCharsets.UTF_8);
-            }
+            return processBlock(sm2Engine,outType,in);
+        }catch (InvalidCipherTextException e){
+            throw new SmException("加密错误",e);
         } catch (Exception e) {
             throw new SmException(e);
         }
+    }
 
+    private static String processBlock(SM2EngineExtend sm2Engine, EncodeType outType, byte[] in) throws InvalidCipherTextException {
+        byte[] arrayOfBytes = sm2Engine.processBlock(in, 0, in.length);
+        if (EncodeType.BASE64.equals(outType)) {
+            byte[] base64Bytes = Base64.getEncoder().encode(arrayOfBytes);
+            return new String(base64Bytes, StandardCharsets.UTF_8);
+        } else if (EncodeType.HEX.equals(outType)) {
+            return Hex.toHexString(arrayOfBytes).toUpperCase(Locale.ROOT);
+        } else {
+            return new String(arrayOfBytes, StandardCharsets.UTF_8);
+        }
     }
 
     private static byte[] addBitIfNeed(byte[] base64Decode) {
@@ -213,12 +227,12 @@ public class SM2 {
 
     /**
      * 解密
+     * 解密暂不支持 "UTF-8"数据输入
      * @param priKey  私钥
      * @param cipherData 密文数据
      * @param inputType 输入数据类型
      * @param outType 输出数据类型
      * @author zhuyijun
-     * @date 2023/2/14 10:11
      * @return java.lang.String
     */
     public static String decrypt(String priKey, String cipherData,EncodeType inputType, EncodeType outType) {
@@ -228,18 +242,20 @@ public class SM2 {
 
     /**
      * SM2解密算法
-     *
+     * 解密暂不支持 "UTF-8"数据输入
      * @param priKey     私钥
      * @param cipherData 密文数据
      * @param cipherMode 密文排列方式 0-C1C2C3；1-C1C3C2；
      * @return 解密后的数据
      */
     public static String decrypt(String priKey, String cipherData, int cipherMode, EncodeType inputType, EncodeType outType) {
-
+        if (Objects.equals(EncodeType.UTF8,inputType)){
+            throw new SmException("解密暂不支持UTF-8编码格式数据输入!,请修改输入类型");
+        }
         try {
             byte[] cipherDataByte;
             if (EncodeType.HEX.equals(inputType)) {
-                // 使用BC库加解密时密文以04开头，传入的密文前面没有04则补上
+                // 使用BC库加解密时密文以"04"开头，传入的密文前面没有04则补上
                 if (!cipherData.startsWith(BC04)) {
                     cipherData = BC04 + cipherData;
                 }
@@ -261,16 +277,9 @@ public class SM2 {
             SM2EngineExtend sm2Engine = new SM2EngineExtend();
             // 设置sm2为解密模式
             sm2Engine.init(false, cipherMode, privateKeyParameters);
-
-            byte[] arrayOfBytes = sm2Engine.processBlock(cipherDataByte, 0, cipherDataByte.length);
-            if (EncodeType.HEX.equals(outType)) {
-                return Hex.toHexString(arrayOfBytes).toUpperCase(Locale.ROOT);
-            } else if (EncodeType.BASE64.equals(outType)) {
-                byte[] base64Bytes = Base64.getEncoder().encode(arrayOfBytes);
-                return new String(base64Bytes, StandardCharsets.UTF_8);
-            } else {
-                return new String(arrayOfBytes, StandardCharsets.UTF_8);
-            }
+            return processBlock(sm2Engine,outType,cipherDataByte);
+        } catch (InvalidCipherTextException e){
+            throw new SmException("解密错误",e);
         } catch (Exception e) {
             throw new SmException(e);
         }
@@ -305,12 +314,10 @@ public class SM2 {
             // 生成SM2私钥
             BCECPrivateKey bcecPrivateKey = (BCECPrivateKey) keyFactory.generatePrivate(new ECPrivateKeySpec(bigInteger,
                     ecParameterSpec));
-
             // 初始化为签名状态
             signature.initSign(bcecPrivateKey);
             // 传入签名字节
             signature.update(plainText.getBytes());
-
             // 签名
             return Hex.toHexString(signature.sign()).toUpperCase(Locale.ROOT);
         } catch (Exception e) {
@@ -337,7 +344,6 @@ public class SM2 {
         try {
             // 构造提供器
             BouncyCastleProvider provider = new BouncyCastleProvider();
-
             // 获取一条SM2曲线参数
             X9ECParameters sm2ECParameters = GMNamedCurves.getByName(CRYPTO_NAME_SM2);
             // 构造椭圆参数规格
