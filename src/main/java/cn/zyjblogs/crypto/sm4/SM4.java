@@ -60,17 +60,13 @@ public class SM4 {
      * @return key
      */
     public static String generateKey(int keySize) {
-
         try {
             // 创建Key生成器
             KeyGenerator kg = KeyGenerator.getInstance(SM4_ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
-
             // 初始化
             kg.init(keySize, new SecureRandom());
-
             // 生成Key
             byte[] encoded = kg.generateKey().getEncoded();
-
             // 返回HEX字符串
             return Hex.toHexString(encoded).toUpperCase(Locale.ROOT);
         } catch (Exception e) {
@@ -97,13 +93,10 @@ public class SM4 {
             SecretKeySpec keySpec = new SecretKeySpec(Hex.decode(keyHex), SM4_ALGORITHM);
             // 创建IV向量
             IvParameterSpec ivSpec = new IvParameterSpec(Hex.decode(ivHex));
-
             // 初始化
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-
             // 调用加密方法
             byte[] outputBytes = cipher.doFinal(planText.getBytes(StandardCharsets.UTF_8));
-
             return Hex.toHexString(outputBytes).toUpperCase(Locale.ROOT);
         } catch (Exception e) {
             throw new SmException(e);
@@ -128,7 +121,6 @@ public class SM4 {
             SecretKeySpec keySpec = new SecretKeySpec(Hex.decode(keyHex), SM4_ALGORITHM);
             // 创建IV向量
             IvParameterSpec ivSpec = new IvParameterSpec(Hex.decode(ivHex));
-
             // 初始化
             cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
             // 调用加密方法
@@ -155,13 +147,10 @@ public class SM4 {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION_ECB);
             // 创建加密规则
             SecretKeySpec keySpec = new SecretKeySpec(Hex.decode(keyHex), SM4_ALGORITHM);
-
             // 初始化
             cipher.init(Cipher.ENCRYPT_MODE, keySpec);
-
             // 调用加密方法
             byte[] outputBytes = cipher.doFinal(planText.getBytes(StandardCharsets.UTF_8));
-
             return Hex.toHexString(outputBytes).toUpperCase(Locale.ROOT);
         } catch (Exception e) {
             throw new SmException(e);
@@ -183,13 +172,10 @@ public class SM4 {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION_ECB);
             // 创建加密规则
             SecretKeySpec keySpec = new SecretKeySpec(Hex.decode(keyHex), SM4_ALGORITHM);
-
             // 初始化
             cipher.init(Cipher.DECRYPT_MODE, keySpec);
-
             // 调用加密方法
             byte[] outputBytes = cipher.doFinal(Hex.decode(cipherDataHex));
-
             return new String(outputBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
             throw new SmException(e);

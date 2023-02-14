@@ -44,7 +44,16 @@ public class SM2 {
         BASE64
     }
 
-
+    public enum Mode {
+        /**
+         * BC库默认排序方式-C1C2C3
+         */
+        CIPHER_MODE_BC,
+        /**
+         * 国密标准排序方式-C1C3C2
+         */
+       CIPHER_MODE_NORM
+    }
     /**
      * 生成SM2公私钥对
      * <p>
@@ -99,6 +108,36 @@ public class SM2 {
         return encrypt(pubKey, data, SM2EngineExtend.CIPHER_MODE_NORM, EncodeType.UTF8, EncodeType.HEX);
     }
 
+    /**
+     * SM2加密算法
+     *
+     * @param pubKey 公钥
+     * @param data   待加密的数据
+     * @param inputType 输入数据类型
+     * @param outType 输出数据类型
+     * @return 密文，BC库产生的密文带由04标识符，与非BC库对接时需要去掉开头的04
+     */
+    public static String encrypt(String pubKey, String data,EncodeType inputType, EncodeType outType) {
+
+        // 按国密排序标准加密
+        return encrypt(pubKey, data, SM2EngineExtend.CIPHER_MODE_NORM, inputType, outType);
+    }
+    /**
+     *  加密
+     * @param pubKey 公钥
+     * @param data  待加密的数据
+     * @param mode 模式
+     *       CIPHER_MODE_BC   BC库默认排序方式-C1C2C3
+     *       CIPHER_MODE_NORM 国密标准排序方式-C1C3C2
+     * @param inputType 输入数据类型
+     * @param outType 输出数据类型
+     * @author zhuyijun
+     * @date 2023/2/14 10:18
+     * @return java.lang.String
+    */
+    public static String encrypt(String pubKey, String data,Mode mode,EncodeType inputType, EncodeType outType) {
+        return encrypt(pubKey, data,Mode.CIPHER_MODE_BC == mode ? SM2EngineExtend.CIPHER_MODE_BC : SM2EngineExtend.CIPHER_MODE_NORM, inputType, outType);
+    }
     /**
      * SM2加密算法
      *
@@ -170,6 +209,21 @@ public class SM2 {
     public static String decrypt(String priKey, String cipherData) {
         // // 按国密排序标准解密
         return decrypt(priKey, cipherData, SM2EngineExtend.CIPHER_MODE_NORM, EncodeType.HEX, EncodeType.UTF8);
+    }
+
+    /**
+     * 解密
+     * @param priKey  私钥
+     * @param cipherData 密文数据
+     * @param inputType 输入数据类型
+     * @param outType 输出数据类型
+     * @author zhuyijun
+     * @date 2023/2/14 10:11
+     * @return java.lang.String
+    */
+    public static String decrypt(String priKey, String cipherData,EncodeType inputType, EncodeType outType) {
+        // // 按国密排序标准解密
+        return decrypt(priKey, cipherData, SM2EngineExtend.CIPHER_MODE_NORM, inputType, outType);
     }
 
     /**
@@ -319,17 +373,14 @@ public class SM2 {
      * @return 证书验证结果
      */
     public static boolean certVerify(String certStr, String plaintext, String signValueStr) {
-
         try {
             // 构造提供器
             BouncyCastleProvider provider = new BouncyCastleProvider();
-
             // 解析证书
             byte[] signValue = Hex.decode(signValueStr);
             CertificateFactory factory = new CertificateFactory();
             X509Certificate certificate = (X509Certificate) factory
                     .engineGenerateCertificate(new ByteArrayInputStream(Hex.decode(certStr)));
-
             // 验证签名
             Signature signature = Signature.getInstance(certificate.getSigAlgName(), provider);
             signature.initVerify(certificate);
@@ -346,7 +397,6 @@ public class SM2 {
         String data = "dPhq2XdoMcgD5m7M0I51SX7MkzMerWMcPdBdv/tX8B5jOyM28n+CcXUn721/9N0ELVgC2P0eBRn4jD04rPScJd5izcC7+xXT5LUwbV2S6wc0g2RC8nkuZITc4rdrACPvNxd18b6y";
         String pub = "0417f347d7fa08ae6ad9bf8ef6ac6c313810e05044290f7c18dc9b913b252603505cf7cdbf7ac7d88de508e78bbc2d74cb28c0a90724ed4b751cc69bdfe55b68de";
         String pri = "73d76cf4f553535d6ec45478fb1581baa0c83e166b347af10ab129966d3f187f";
-        String key = "0123456789abcdeffedcba9876543210";
         try {
             String decrypt2 = SM2.decrypt(pri, "BCWhJJ0BFPt/RuhS37sk22/5GuemkzG7kt+CLwRSz34taiKPjc0TDoY959dCf7C2cZJ2uzLoqRmcH/pV7uWGhPzTIZmKM8wPpVIeuN616dNVm+5/YpaQfcawis6KpJOeeU4fcyrYf9wcawtkow==", 1, EncodeType.BASE64, EncodeType.UTF8);
             System.out.println("-------------");
